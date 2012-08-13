@@ -55,7 +55,7 @@ class Rank:
                         if winner[1] > matches[index-1][0]:
                             matches_copy.pop(index)
                             for item in matches:
-                                if item[0] < winner[1]:
+                                if int(item[0]) < int(winner[1]):
                                     insert_index = matches.index(item)
                                     matches_copy.insert(insert_index, winner_raw)
                                     index = matches_copy.index(winner_raw)
