@@ -16,6 +16,7 @@ class Rank:
         file.close()
 
     def index(self, index):
+        index = str(index+1)
         if index == "1":
             return index + "st)"
         elif index == "2":
@@ -36,37 +37,56 @@ class Rank:
                 winner_name = line_args[2]
                 
                 matches = open(self.won_matches, 'r').readlines()
-                winner_raw = ""
+                temp = []
+                for item in matches:
+                    temp.append([item.split()[0], item.split()[1]])
+                matches = temp[:]
+                matches_copy = matches[:]
+
+                winner_raw = []
                 for player in matches:
-                    player_data = player.split()
-                    if player_data[1] == winner_name:
-                        index = str(matches.index(player))
-                        index = self.index(index)
-                        winner.append("0xff0000    "+index)
-                        winner.append(player_data[0])
+                    if player[1] == winner_name:
+                        index = matches.index(player)
+                        winner.append(index)
+                        winner.append(str(int(player[0])+1))
                         winner.append(winner_name)
                         winner_raw = player
+                        #perform shuffling of the original list
+                        if winner[1] > matches[index-1][0]:
+                            matches_copy.pop(index)
+                            for item in matches:
+                                if item[0] < winner[1]:
+                                    insert_index = matches.index(item)
+                                    matches_copy.insert(insert_index, winner_raw)
+                                    index = matches_copy.index(winner_raw)
+                                    winner[0] = index
+                                    break
+                matches = matches_copy[:]
                 if len(winner) == 0:
-                    data = "CONSOLE_MESSAGE 0x00ff00"+winner_name+" won their first match!"
+                    data = "CONSOLE_MESSAGE 0x00ff00"+winner_name+" won their first match!\n"
                     self.flush(data)
                     continue
-                winner_index = matches.index(winner_raw)
-                for i in range(winner_index-2, winner_index):
+                for i in range(winner[0]-2, winner[0]):
+                    if i < 0:
+                        continue
                     try:
-                        index = self.index(str(i))
-                        global_result.append(["0xffff99    "+index, matches[i].split()[0], matches[i].split()[1]])
+                        global_result.append([i, matches[i][0], matches[i][1]])
                     except:
                         pass
                 global_result.append(winner)
-                for i in range(winner_index+1, winner_index+3):
+                for i in range(winner[0]+1, winner[0]+3):
                     try:
-                        index = self.index(str(i))
-                        global_result.append(["0xffff99    "+index, matches[i].split()[0], matches[i].split()[1]])
+                        global_result.append([i, matches[i][0], matches[i][1]])
                     except:
                         pass
                 self.flush("CONSOLE_MESSAGE 0x00ff00Won Matches:\n")
                 for value in global_result:
-                    self.flush("CONSOLE_MESSAGE "+value[0]+" "+value[1]+"  "+value[2]+"\n")
+                    if value == winner:
+                        color = "0xff0000"
+                    else:
+                        color = "0xffff99"
+                    index = self.index(value[0])
+                    self.flush("CONSOLE_MESSAGE "+color+"    "+index+" "+value[1]+"  "+value[2]+"\n")
 
 if __name__ == "__main__":
     rank = Rank(path_to_cmds, path_to_won_matches)
