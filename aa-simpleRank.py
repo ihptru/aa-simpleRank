@@ -17,11 +17,11 @@ class Rank:
 
     def index(self, index):
         index = str(index+1)
-        if index == "1":
+        if index[-1] == "1" and index[-2:] != "11":
             return index + "st)"
-        elif index == "2":
+        elif index[-1] == "2" and index[-2:] != "12":
             return index + "nd)"
-        elif index == "3":
+        elif index[-1] == "3" and index[-2:] != "13":
             return index + "rd)"
         else:
             return index + "th)"
