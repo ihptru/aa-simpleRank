@@ -39,7 +39,7 @@ class Rank:
                 matches = open(self.won_matches, 'r').readlines()
                 temp = []
                 for item in matches:
-                    temp.append([item.split()[0], item.split()[1]])
+                    temp.append([item.split()[0], item.split()[1].rstrip()])
                 matches = temp[:]
                 matches_copy = matches[:]
 
@@ -52,7 +52,7 @@ class Rank:
                         winner.append(winner_name)
                         winner_raw = player
                         #perform shuffling of the original list
-                        if winner[1] > matches[index-1][0]:
+                        if int(winner[1]) > int(matches[index-1][0]):
                             matches_copy.pop(index)
                             for item in matches:
                                 if int(item[0]) < int(winner[1]):
